@@ -1,348 +1,394 @@
- <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>A Science Bowl Timer and Scorekeeper</title>
-    <script src="https://kit.fontawesome.com/3573f6a0f9.js" crossorigin="anonymous"></script>
-    <script>
-      function init() {
-        document.getElementById("teamAscore").value = 0;
-        document.getElementById("teamBscore").value = 0;
 
-        halfTimer = document.getElementById("halfSeconds");
-	halfTimer.value = 480;
-        document.getElementById("halfSecondsDisp").value = secondsInMinutes(halfTimer.value);
-        document.getElementById("questionSeconds").value = 0;
-
-        halfTime = null; questionTime = null;
-
-        buzzerSound = document.getElementById('wrongBuzzer_audio'); 
-
-        logS = "Log of score changes will be kept here, just in case.<br> <br> Start of match.  Good luck teams!<br>";
-        document.getElementById("log").innerHTML = logS;
-	console.log(logS);
-	window.scrollTo(0, 0);
-      }
-
-	function secondsInMinutes(secs) {
-	  min = Math.floor(secs/60.0);
-	  s = secs % 60;
-	  if (s < 10) s = "0" + s;
-	  disp = min + ":" + s;
-	  return disp;
-	}
-	
-      function addScore(team, amount) {
-        var scoreElement = document.getElementById("team"+team+"score");
-        scoreElement.value = parseInt(scoreElement.value) + parseInt(amount);
-
-        logS = "Score for team " + team + " changed by " + amount + "<br>";
-        document.getElementById("log").innerHTML += logS;
-	console.log(logS);
-	window.scrollTo(0, 0);
-      }
-
-      function decreaseHalfTimer() {
-        halfTimer = document.getElementById("halfSeconds");
-        if (parseInt(halfTimer.value) > 0)
-          halfTimer.value = parseInt(halfTimer.value) - 1;
-
-        if (parseInt(halfTimer.value) <= 0) {
-          window.clearInterval(halfTime);
-          buzzerSound.play();
-	  document.getElementById("clockDiv").style.backgroundColor = "red";
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>A Science Bowl Timer and Scorekeeper</title>
+  <script src="https://kit.fontawesome.com/3573f6a0f9.js" crossorigin="anonymous"></script>
+  <script>
+    function onKonamiCode(cb) {
+      var input = '';
+      var key = '68';
+      document.addEventListener('keydown', function (e) {
+        input += ("" + e.keyCode);
+        if (input === key) {
+          return cb();
         }
+        if (!key.indexOf(input)) return;
+        input = ("" + e.keyCode);
+      });
+    }
+    onKonamiCode(function () { window.location.replace("https://sarthakmohanty.me/ScienceBowlScoreTimer/darksciencebowl") })
+    function init() {
+      document.getElementById("teamAscore").value = 0;
+      document.getElementById("teamBscore").value = 0;
 
-        document.getElementById("halfSecondsDisp").value = secondsInMinutes(halfTimer.value);
+      halfTimer = document.getElementById("halfSeconds");
+      halfTimer.value = 480;
+      document.getElementById("halfSecondsDisp").value = secondsInMinutes(halfTimer.value);
+      document.getElementById("questionSeconds").value = 0;
+
+      halfTime = null; questionTime = null;
+
+      buzzerSound = document.getElementById('wrongBuzzer_audio');
+
+      logS = "Log of score changes will be kept here, just in case.<br> <br> Start of match.  Good luck teams!<br><br>";
+      document.getElementById("log").innerHTML = logS;
+      console.log(logS);
+      window.scrollTo(0, 0);
+    }
+
+    function secondsInMinutes(secs) {
+      min = Math.floor(secs / 60.0);
+      s = secs % 60;
+      if (s < 10) s = "0" + s;
+      disp = min + ":" + s;
+      return disp;
+    }
+
+    function addScore(team, amount) {
+      var scoreElement = document.getElementById("team" + team + "score");
+      scoreElement.value = parseInt(scoreElement.value) + parseInt(amount);
+
+      logS = "Score for team " + team + " changed by " + amount + "<br>";
+      document.getElementById("log").innerHTML += logS;
+      console.log(logS);
+      window.scrollTo(0, 0);
+    }
+
+    function decreaseHalfTimer() {
+      halfTimer = document.getElementById("halfSeconds");
+      if (parseInt(halfTimer.value) > 0)
+        halfTimer.value = parseInt(halfTimer.value) - 1;
+
+      if (parseInt(halfTimer.value) <= 0) {
+        window.clearInterval(halfTime);
+        buzzerSound.play();
+        document.getElementById("clockDiv").style.backgroundColor = "red";
       }
 
-      function minutesToSeconds(s) {
-        A = s.split(":");
-	secs = parseInt(A[0])*60 + parseInt(A[1]);
-	return secs;
+      document.getElementById("halfSecondsDisp").value = secondsInMinutes(halfTimer.value);
+    }
+
+    function minutesToSeconds(s) {
+      A = s.split(":");
+      secs = parseInt(A[0]) * 60 + parseInt(A[1]);
+      return secs;
+    }
+
+    function startTimer() {
+      if (halfTime != null)
+        window.clearInterval(halfTime);
+      document.getElementById("halfSeconds").value = minutesToSeconds(document.getElementById("halfSecondsDisp").value);
+      halfTime = window.setInterval(decreaseHalfTimer, 1000);
+      document.getElementById("clockDiv").style.backgroundColor = "white";
+    }
+
+    function pauseTimer() {
+      if (halfTime != null)
+        window.clearInterval(halfTime);
+    }
+
+    function resetTimer() {
+      if (halfTime != null) window.clearInterval(halfTime);
+      document.getElementById("halfSeconds").value = "480";
+      document.getElementById("halfSecondsDisp").value = secondsInMinutes(halfTimer.value);
+      document.getElementById("clockDiv").style.backgroundColor = "white";
+    }
+
+
+
+    function decreaseQtimer() {
+      questionTimer = document.getElementById("questionSeconds");
+      if (parseInt(questionTimer.value) > 0)
+        questionTimer.value = parseInt(questionTimer.value) - 1;
+
+      if (parseInt(questionTimer.value) <= 0) {
+        window.clearInterval(questionTime);
+        buzzerSound.play();
+        document.getElementById("clockDiv").style.backgroundColor = "red";
       }
-      
-      function startTimer() {
-        if (halfTime != null)
-          window.clearInterval(halfTime);
-	document.getElementById("halfSeconds").value = minutesToSeconds(document.getElementById("halfSecondsDisp").value);
-        halfTime = window.setInterval(decreaseHalfTimer,1000);
-        document.getElementById("clockDiv").style.backgroundColor = "white";
+    }
+
+    function startTossup() {
+      document.getElementById("questionSeconds").value = "5";
+      if (questionTime != null)
+        window.clearInterval(questionTime);
+      questionTime = window.setInterval(decreaseQtimer, 1000);
+      document.getElementById("clockDiv").style.backgroundColor = "white";
+    }
+
+    function startBonus() {
+      document.getElementById("questionSeconds").value = "20";
+      if (questionTime != null)
+        window.clearInterval(questionTime);
+      questionTime = window.setInterval(decreaseQtimer, 1000);
+      document.getElementById("clockDiv").style.backgroundColor = "white";
+    }
+
+    function clearQtimer() {
+      document.getElementById("questionSeconds").value = "0";
+      if (questionTime != null)
+        window.clearInterval(questionTime);
+      document.getElementById("clockDiv").style.backgroundColor = "white";
+    }
+  </script>
+
+  <style>
+    * {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    div,
+    h1 {
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 150%;
+    }
+
+    a {
+      color: #ffffff91;
+    }
+
+    .footer-distributed {
+      background-color: #292c2f;
+      box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.12);
+      box-sizing: border-box;
+      width: 100%;
+      text-align: left;
+      font: normal 16px sans-serif;
+      padding: 45px 50px;
+    }
+
+    .footer-distributed .footer-left p {
+      color: #8f9296;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    /* Footer links */
+
+    .footer-distributed p.footer-links {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ffffff;
+      margin: 0 0 10px;
+      padding: 0;
+      transition: ease .25s;
+    }
+
+    .footer-distributed p.footer-links a {
+      display: inline-block;
+      line-height: 1.8;
+      text-decoration: none;
+      color: inherit;
+      transition: ease .25s;
+    }
+
+    .footer-distributed .footer-links a:before {
+      content: "·";
+      font-size: 20px;
+      left: 0;
+      color: #fff;
+      display: inline-block;
+      padding-right: 5px;
+    }
+
+    .footer-distributed .footer-links .link-1:before {
+      content: none;
+    }
+
+    .footer-distributed .footer-right {
+      float: right;
+      margin-top: 6px;
+      max-width: 180px;
+    }
+
+    .footer-distributed .footer-right a {
+      display: inline-block;
+      width: 35px;
+      height: 35px;
+      background-color: #33383b;
+      border-radius: 2px;
+      font-size: 20px;
+      color: #ffffff;
+      text-align: center;
+      line-height: 35px;
+      margin-left: 3px;
+      transition: all .25s;
+    }
+
+    .footer-distributed .footer-right a:hover {
+      transform: scale(1.1);
+      -webkit-transform: scale(1.1);
+    }
+
+    .footer-distributed p.footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* Media Queries */
+
+    @media (max-width: 600px) {
+
+      .footer-distributed .footer-left,
+      .footer-distributed .footer-right {
+        text-align: center;
       }
 
-      function pauseTimer() {
-        if (halfTime != null)
-          window.clearInterval(halfTime);				   
+      .footer-distributed .footer-right {
+        float: none;
+        margin: 0 auto 20px;
       }
 
-      function resetTimer() {
-        if (halfTime != null) window.clearInterval(halfTime);
-	document.getElementById("halfSeconds").value = "480";
-        document.getElementById("halfSecondsDisp").value = secondsInMinutes(halfTimer.value);
-        document.getElementById("clockDiv").style.backgroundColor = "white";
+      .footer-distributed .footer-left p.footer-links {
+        line-height: 1.8;
       }
+    }
 
-					 
+    button {
+      height: 100px;
+      font-size: 120%;
+    }
 
-      function decreaseQtimer() {
-        questionTimer = document.getElementById("questionSeconds");
-        if (parseInt(questionTimer.value) > 0)
-          questionTimer.value = parseInt(questionTimer.value) - 1;
+    button.add {
+      background-color: #ccffcc;
+    }
 
-	if (parseInt(questionTimer.value) <= 0) {
-          window.clearInterval(questionTime);
-          buzzerSound.play();
-	  document.getElementById("clockDiv").style.backgroundColor = "red";
-        }
-      }
-      
-      function startTossup() {
-        document.getElementById("questionSeconds").value = "5";
-	if (questionTime != null)
-          window.clearInterval(questionTime);					     
-        questionTime = window.setInterval(decreaseQtimer,1000);
-        document.getElementById("clockDiv").style.backgroundColor = "white";
-      }
+    button.remove {
+      background-color: #ffcccc;
+    }
 
-      function startBonus() {
-        document.getElementById("questionSeconds").value = "20";
-	if (questionTime != null)
-          window.clearInterval(questionTime);					     
-        questionTime = window.setInterval(decreaseQtimer,1000);
-        document.getElementById("clockDiv").style.backgroundColor = "white";
-      }
+    input {
+      font-size: 600%;
+      font-weight: bold;
+    }
 
-      function clearQtimer() {
-        document.getElementById("questionSeconds").value = "0";
-	if (questionTime != null)
-          window.clearInterval(questionTime);
-        document.getElementById("clockDiv").style.backgroundColor = "white";
-      }
-    </script>
+    button,
+    input {
+      vertical-align: middle;
+      background: white;
+      transition: background 250ms ease-in-out,
+        transform 150ms ease;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    }
 
-<style>
-  * {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }
-  div, h1 {
-    text-align:center;
-  }
-  h1 {
-    font-size: 150%;
-  }
-  a {
-    color: #ffffff91;
-  }
-  .footer-distributed {
-  background-color: #292c2f;
-  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.12);
-  box-sizing: border-box;
-  width: 100%;
-  text-align: left;
-  font: normal 16px sans-serif;
-  padding: 45px 50px;
-}
+    button:hover {
+      background: #c1c2c4;
+    }
 
-.footer-distributed .footer-left p {
-  color: #8f9296;
-  font-size: 14px;
-  margin: 0;
-}
-/* Footer links */
+    button.add:hover {
+      background-color: #a9f5a9;
+    }
 
-.footer-distributed p.footer-links {
-  font-size: 18px;
-  font-weight: bold;
-  color: #ffffff;
-  margin: 0 0 10px;
-  padding: 0;
-  transition: ease .25s;
-}
+    button.remove:hover {
+      background-color: #fda6a6;
+    }
 
-.footer-distributed p.footer-links a {
-  display: inline-block;
-  line-height: 1.8;
-  text-decoration: none;
-  color: inherit;
-  transition: ease .25s;
-}
+    button:active {
+      transform: scale(0.99);
+    }
 
-.footer-distributed .footer-links a:before {
-  content: "·";
-  font-size: 20px;
-  left: 0;
-  color: #fff;
-  display: inline-block;
-  padding-right: 5px;
-}
+    div.team {
+      float: left;
+      border: solid black 2px;
+      margin: 10px;
+      padding: 10px;
+    }
 
-.footer-distributed .footer-links .link-1:before {
-  content: none;
-}
+    div.clock {
+      border: solid black 2px;
+      margin: 10px;
+      padding: 10px;
+    }
+  </style>
+</head>
 
-.footer-distributed .footer-right {
-  float: right;
-  margin-top: 6px;
-  max-width: 180px;
-}
-
-.footer-distributed .footer-right a {
-  display: inline-block;
-  width: 35px;
-  height: 35px;
-  background-color: #33383b;
-  border-radius: 2px;
-  font-size: 20px;
-  color: #ffffff;
-  text-align: center;
-  line-height: 35px;
-  margin-left: 3px;
-  transition:all .25s;
-}
-
-.footer-distributed .footer-right a:hover{transform:scale(1.1); -webkit-transform:scale(1.1);}
-
-.footer-distributed p.footer-links a:hover{text-decoration:underline;}
-
-/* Media Queries */
-
-@media (max-width: 600px) {
-  .footer-distributed .footer-left, .footer-distributed .footer-right {
-    text-align: center;
-  }
-  .footer-distributed .footer-right {
-    float: none;
-    margin: 0 auto 20px;
-  }
-  .footer-distributed .footer-left p.footer-links {
-    line-height: 1.8;
-  }
-}
-  button {
-    height: 100px;
-    font-size: 120%;
-  }
-  button.add {
-    background-color: #ccffcc;
-  }
-  button.remove {
-    background-color: #ffcccc;
-  }
-  input {
-    font-size: 600%;
-    font-weight: bold;
-  }
-  button, input {
-    vertical-align: middle;
-    background: white;
-    transition: background 250ms ease-in-out, 
-                transform 150ms ease;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }
-  button:hover {
-    background: #c1c2c4;
-}
-  button.add:hover {
-    background-color: #a9f5a9;
-  }
-  button.remove:hover {
-    background-color: #fda6a6;
-  }
-  button:active {
-    transform: scale(0.99);
-}
-  div.team {
-    float:left;
-    border: solid black 2px;
-    margin: 10px;
-    padding: 10px;
-  }
-  div.clock {
-    border: solid black 2px;
-    margin: 10px;
-    padding: 10px;
-  }
-</style>
-  </head>
-
-  <body onload='init();'>
-    <div class="clock" id="clockDiv">
-      <h1>Clock</h1>
-      <div style="float:left; padding-right: 30px">
-	<p style="text-align:left">Half timer (m:ss)</p>
-	  <input type="hidden" id="halfSeconds" />
-	  <input style="width:220px" type="text" id="halfSecondsDisp" class="timer"/>
-	  <button type="button" onclick="startTimer();" id="startTimer">Start</button>
-	  <button type="button" onclick="pauseTimer();" id="pauseTimer">Pause</button>
-	  <button type="button" onclick="resetTimer();" id="resetTimer">Reset</button>
-      </div>
-
-      <div style="float:left">
-	<p style="text-align:left">Question timer (seconds)</p>
-	<input style="width:150px" type="text" id="questionSeconds" class="timer"/>
-	<button type="button" onclick="startTossup();" id="startTossup">Tossup: 5s</button>
-	<button type="button" onclick="startBonus();" id="startBonus">Bonus: 20s</button>
-	<button type="button" onclick="clearQtimer();" id="clearQtimer">Clear</button>
-      </div>
-
-	<p style="clear:both"></p>
-	  
+<body onload='init();'>
+  <div class="clock" id="clockDiv">
+    <h1>Clock</h1>
+    <p>For Dark Mode press d</p>
+    <div style="float:left; padding-right: 30px">
+      <p style="text-align:left">Half timer (m:ss)</p>
+      <input type="hidden" id="halfSeconds" />
+      <input style="width:220px" type="text" id="halfSecondsDisp" class="timer" />
+      <button type="button" onclick="startTimer();" id="startTimer">Start</button>
+      <button type="button" onclick="pauseTimer();" id="pauseTimer">Pause</button>
+      <button type="button" onclick="resetTimer();" id="resetTimer">Reset</button>
     </div>
 
-    <div style="text-align:center;margin:auto">
-      
+    <div style="float:left">
+      <p style="text-align:left">Question timer (seconds)</p>
+      <input style="width:150px" type="text" id="questionSeconds" class="timer" />
+      <button type="button" onclick="startTossup();" id="startTossup">Tossup: 5s</button>
+      <button type="button" onclick="startBonus();" id="startBonus">Bonus: 20s</button>
+      <button type="button" onclick="clearQtimer();" id="clearQtimer">Clear</button>
+    </div>
+
+    <p style="clear:both"></p>
+
+  </div>
+
+  <div style="text-align:center;margin:auto">
+
     <div class="team">
       <h1>Team A</h1>
-      <div style="float:left;margin-right:20px"><p class="score"> <input style="width:200px" type="text" readonly id="teamAscore" class="score" value="0"/></p></div>
+      <div style="float:left;margin-right:20px">
+        <p class="score"> <input style="width:200px" type="text" readonly id="teamAscore" class="score" value="0" /></p>
+      </div>
       <div style="float:left">
-      <table>
-	<tr>
-	  <td>Add</td>
-	  <td><button type="button" class="add" onclick="addScore('A',4);">Toss up: 4</button></td>
-	  <td><button type="button" class="add" onclick="addScore('A',10);">Bonus: 10</button></td>
-	</tr>
-	<tr>
-	  <td>Remove</td>
-	  <td><button type="button" class="remove" onclick="addScore('A',-4);">Toss up: 4</button></td>
-	  <td><button type="button" class="remove" onclick="addScore('A',-10);">Bonus: 10</button></td>
-	</tr>
-      </table>
+        <table>
+          <tr>
+            <td>Add</td>
+            <td><button type="button" class="add" onclick="addScore('A',4);">Toss up: 4</button></td>
+            <td><button type="button" class="add" onclick="addScore('A',10);">Bonus: 10</button></td>
+          </tr>
+          <tr>
+            <td>Remove</td>
+            <td><button type="button" class="remove" onclick="addScore('A',-4);">Toss up: 4</button></td>
+            <td><button type="button" class="remove" onclick="addScore('A',-10);">Bonus: 10</button></td>
+          </tr>
+        </table>
       </div>
     </div>
 
     <div class="team">
       <h1>Team B</h1>
-      <div style="float:left;margin-right:20px"><p class="score"> <input style="width:200px" type="text" readonly id="teamBscore" class="score" value="0"/></p></div>
+      <div style="float:left;margin-right:20px">
+        <p class="score"> <input style="width:200px" type="text" readonly id="teamBscore" class="score" value="0" /></p>
+      </div>
       <div style="float:left">
-      <table>
-	<tr>
-	  <td>Add</td>
-	  <td><button type="button" class="add" onclick="addScore('B',4);">Toss up: 4</button></td>
-	  <td><button type="button" class="add" onclick="addScore('B',10);">Bonus: 10</button></td>
-	</tr>
-	
-	<tr>
-	  <td>Remove</td>
-	  <td><button type="button" class="remove" onclick="addScore('B',-4);">Toss up: 4</button></td>
-	  <td><button type="button" class="remove" onclick="addScore('B',-10);">Bonus: 10</button></td>
-	</tr>
-      </table>
+        <table>
+          <tr>
+            <td>Add</td>
+            <td><button type="button" class="add" onclick="addScore('B',4);">Toss up: 4</button></td>
+            <td><button type="button" class="add" onclick="addScore('B',10);">Bonus: 10</button></td>
+          </tr>
+
+          <tr>
+            <td>Remove</td>
+            <td><button type="button" class="remove" onclick="addScore('B',-4);">Toss up: 4</button></td>
+            <td><button type="button" class="remove" onclick="addScore('B',-10);">Bonus: 10</button></td>
+          </tr>
+        </table>
       </div>
     </div>
 
-    </div>
-    
-	<p style="clear:both"> </p>
-	<hr>
+  </div>
 
-	  <h1>About this page</h1>
-	  <p>This page is a simple webpage that science bowl teams can
-	    use during practice.  It should be self-explanatory to
-	    anyone who does science bowl or quiz bowl...</p>
+  <p style="clear:both"> </p>
+  <hr>
+
+  <h1>About this page</h1>
+  <p>This page is a simple webpage that science bowl teams can
+    use during practice. It should be self-explanatory to
+    anyone who does science bowl or quiz bowl...</p>
 
 
-	<p id="log">
+  <p id="log">
   </p>
   <footer class="footer-distributed">
 
@@ -365,13 +411,13 @@
         <a href="https://sarthaktexas.github.io/contact">Contact</a>
       </p>
 
-      <p>Made with ❤️ by <a href="https://sarthaktexas.github.io"><span>Sarthak Mohanty</span></a> at Brandeis High School &copy; 2020</p>
+      <p>Made with ❤️ by <a href="https://sarthaktexas.github.io"><span>Sarthak Mohanty</span></a> at Brandeis High
+        School &copy; 2020</p>
     </div>
 
   </footer>
-	<audio id="wrongBuzzer_audio" preload="auto">
-	    <source id="wrongBuzzer_mp3" type="audio/mpeg"
-	      src="data:audio/mpeg;base64,SUQzAwAAAABENVRZRVIAAAANAAAB//4yADAAMQA2AAAAVERBVAAAAA0AAAH//jEAOQAwADIAAABU
+  <audio id="wrongBuzzer_audio" preload="auto">
+    <source id="wrongBuzzer_mp3" type="audio/mpeg" src="data:audio/mpeg;base64,SUQzAwAAAABENVRZRVIAAAANAAAB//4yADAAMQA2AAAAVERBVAAAAA0AAAH//jEAOQAwADIAAABU
 SU1FAAAADQAAAf/+MQA3ADIAMQAAAFBSSVYAABnmAABYTVAAPD94cGFja2V0IGJlZ2luPSLvu78i
 IGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9i
 ZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS4zLWMwMTEgNjYuMTQ1NjYxLCAy
@@ -1010,10 +1056,8 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AABUQUcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyMDE2AAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAA=="
-		    />
-	    <source id="wrongBuzzer_ogg" type="audio/ogg"
-		    src="data:audio/ogg;base64,T2dnUwACAAAAAAAAAAByn5REAAAAAOeA0IsBHgF2b3JiaXMAAAAAAkSsAAD/////APQBAP////+4
+AAAAAAAAAAAAAAAAAAAAAA==" />
+    <source id="wrongBuzzer_ogg" type="audio/ogg" src="data:audio/ogg;base64,T2dnUwACAAAAAAAAAAByn5REAAAAAOeA0IsBHgF2b3JiaXMAAAAAAkSsAAD/////APQBAP////+4
 AU9nZ1MAAAAAAAAAAAAAcp+URAEAAAAC4wYkElj/////////////////////PAN2b3JiaXMsAAAA
 WGlwaC5PcmcgbGliVm9yYmlzIEkgMjAxNTAxMDUgKOKbhOKbhOKbhOKbhCkBAAAAGAAAAEVOQ09E
 RVI9VkxDIG1lZGlhIHBsYXllcgEFdm9yYmlzKUJDVgEACAAAgCJMGMSA0JBVAAAQAACgrDeWe8i9
@@ -1365,11 +1409,9 @@ Ni1MQaxamKCiCjKWhQREwcS0tjQwxbRioq/w5tWOYWOhFpZWrBqqhinoqryv9g/CABRFllEIUggQ
 RkI5ADBIcsxQQgoJogGhQsIQKUjt6SoIIyGOyIFsKZQICQPHRISKGYgV7dUjgLDkEAfG2AoUU1YU
 LBtjFEQiYBwxQoSSiDpUTIgGEEawhKImqFiqIKZta0tDEUIopgkQUoAgDCIQYvQ6mt4UUmgDUQFc
 nv6qejxPKa8KMWDJyCaInKySd16Fr069nOQJ53IgKQitUCFE/fcy2e+a7b/ojhAaEcgOCLGsUIFw
-gOwYv/NLgKYHAk9nZ1MABH+0AAAAAAAAcp+URAYAAAC7j+1SAQA="
-		    />
-	    
-      <source id="wrongBuzzer_wav" type="audio/wav"
-	      src="data:audio/wav;base64,UklGRiSoAwBXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQCoAwDR/9X/1P/Y/9X/2v/R
+gOwYv/NLgKYHAk9nZ1MABH+0AAAAAAAAcp+URAYAAAC7j+1SAQA=" />
+
+    <source id="wrongBuzzer_wav" type="audio/wav" src="data:audio/wav;base64,UklGRiSoAwBXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQCoAwDR/9X/1P/Y/9X/2v/R
 /9b/1v/b/9n/2f/S/9b/1v/Y/9f/0//X/9T/2P/d/9b/1v/T/9j/1f/X/9j/2P/S/9j/0//S/9j/
 2//W/9T/2f/V/9j/1P/T/9L/1f/b/9T/0v/V/9b/0f/c/9f/2P/R/9n/0P/c/9v/1P/U/9T/2//V
 /9X/1v/Q/9T/2f/a/9H/3f/T/9P/0v/T/9j/2P/X/9b/3//X/9T/2f/O/9f/1//d/9P/1f/W/9j/
@@ -5573,11 +5615,10 @@ AP//AgD7/wAA/P8JAAMAAAAFAAEA/v8AAP//CAD8/wgA+v/6//v/AAD8/wEAAwD5//v/CgD7/wkA
 //7/BAD3/wEA8/8DAPX/AQD8//3//P/6//n///8BAPv/9f8EAP7////5//j////3/wwA+f/9/wIA
 +f8AAPn/BwACAPr/BAD1/wcA+/8AAPj/AwAKAPv/+//6/wEA///7/wIA+P/9/wEA/P8AAP7//v//
 ////+v/2/wQA/f8CAAQA+v/9//3/AwD///3/AAD9/wQA+P8BAPr/AwAEAPz/BgD8/wYA/f8KAP//
-/v8GAPj/AQD//wcA///1/wUA//8CAAMA/P8GAP//BQA="
-	      /> 
-    </audio>
-    
-	
-  </body>
+/v8GAPj/AQD//wcA///1/wUA//8CAAMA/P8GAP//BQA=" />
+  </audio>
+
+
+</body>
 
 </html>
